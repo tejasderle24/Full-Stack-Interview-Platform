@@ -2,12 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import dotenv from 'dotenv'
 import connectDB from './src/config/database.js';
-dotenv.config({})
+import config from './src/config/config.js';
 
-// Connect to database
-connectDB();
 
 const app = express();
 
@@ -21,10 +18,18 @@ app.use(express.json());
 // app.use('/api', routes);
 
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Route not found' });
+    res.status(404).json({ message: 'Route not found' });
 });
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+    try {
+        connectDB();
+        app.listen(config.PORT, () => {
+            console.log(`🚀 Server running on port ${config.PORT}`);
+        });
+    } catch (error) {
+        console.error(`💥Error Starting From Server:${error}`)
+    }
+}
+
+startServer();
